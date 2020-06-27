@@ -60,7 +60,49 @@ def genCircle(N=5242):
     """
     ############################################################################
     # TODO: Your code here!
-    Graph = None
+    E = 2*N + 4000
+    Graph = snap.TUNGraph.New(N, E)
+    for i in range(N):
+        Graph.AddNode(i)
+
+    for i in range(N):
+        src_node_id = i
+        dst_node_0 = i - 1
+        if dst_node_0 < 0:
+            dst_node_0 = N + dst_node_0
+        dst_node_1 = i + 1
+        if dst_node_1 >= N:
+            dst_node_1 = dst_node_1 % N
+
+        if not Graph.IsEdge(src_node_id, dst_node_0):
+            Graph.AddEdge(src_node_id, dst_node_0)
+
+        if not Graph.IsEdge(src_node_id, dst_node_1):
+            Graph.AddEdge(src_node_id, dst_node_1)
+
+    for i in range(N):
+        src_node_id = i
+        dst_node_0 = i - 2
+        if dst_node_0 < 0:
+            dst_node_0 = N + dst_node_0
+        dst_node_1 = i + 2
+        if dst_node_1 >= N:
+            dst_node_1 = dst_node_1 % N
+        
+        if not Graph.IsEdge(src_node_id, dst_node_0):
+            Graph.AddEdge(src_node_id, dst_node_0)
+
+        if not Graph.IsEdge(src_node_id, dst_node_1):
+            Graph.AddEdge(src_node_id, dst_node_1)
+
+    total_random_connections = 4000
+    count_random_connections = 0
+    while count_random_connections < total_random_connections:
+        src_node_id = random.randint(0, N-1)
+        dst_node_id = random.randint(0, N-1)
+        if not Graph.IsEdge(src_node_id, dst_node_id):
+            Graph.AddEdge(src_node_id, dst_node_id)
+            count_random_connections += 1
     ############################################################################
     return Graph
 
