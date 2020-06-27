@@ -3,6 +3,7 @@
 # Starter code for Question 1
 # Last Updated: Sep 25, 2019
 ################################################################################
+import random
 
 import snap
 import numpy as np
@@ -25,8 +26,26 @@ def genErdosRenyi(N=5242, E=14484):
     """
     ############################################################################
     # TODO: Your code here!
-    Graph = None
+    Graph = snap.TUNGraph.New(N, E)
+    for i in range(N):
+        Graph.AddNode(i)
 
+    for i in range(E):
+        src_node_id = random.randint(0, N-1)
+        result = False
+        while not result:
+            dst_node_id = random.randint(0, N-1)
+            if dst_node_id == src_node_id:
+                result = False
+            else:
+                exist = Graph.IsEdge(src_node_id, dst_node_id)
+                if exist:
+                    result = False
+                else:
+                    Graph.AddEdge(src_node_id, dst_node_id)
+                    result = True
+
+        # Graph.AddEdge(src_node_id, dst_node_id)
     ############################################################################
     return Graph
 
