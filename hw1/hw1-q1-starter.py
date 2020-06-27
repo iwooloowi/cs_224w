@@ -79,30 +79,6 @@ def genCircle(N=5242):
 
         if not Graph.IsEdge(src_node_id, dst_node_1):
             Graph.AddEdge(src_node_id, dst_node_1)
-
-    for i in range(N):
-        src_node_id = i
-        dst_node_0 = i - 2
-        if dst_node_0 < 0:
-            dst_node_0 = N + dst_node_0
-        dst_node_1 = i + 2
-        if dst_node_1 >= N:
-            dst_node_1 = dst_node_1 % N
-        
-        if not Graph.IsEdge(src_node_id, dst_node_0):
-            Graph.AddEdge(src_node_id, dst_node_0)
-
-        if not Graph.IsEdge(src_node_id, dst_node_1):
-            Graph.AddEdge(src_node_id, dst_node_1)
-
-    total_random_connections = 4000
-    count_random_connections = 0
-    while count_random_connections < total_random_connections:
-        src_node_id = random.randint(0, N-1)
-        dst_node_id = random.randint(0, N-1)
-        if not Graph.IsEdge(src_node_id, dst_node_id):
-            Graph.AddEdge(src_node_id, dst_node_id)
-            count_random_connections += 1
     ############################################################################
     return Graph
 
@@ -118,7 +94,20 @@ def connectNbrOfNbr(Graph, N=5242):
     """
     ############################################################################
     # TODO: Your code here!
+    for i in range(N):
+        src_node_id = i
+        dst_node_0 = i - 2
+        if dst_node_0 < 0:
+            dst_node_0 = N + dst_node_0
+        dst_node_1 = i + 2
+        if dst_node_1 >= N:
+            dst_node_1 = dst_node_1 % N
+        
+        if not Graph.IsEdge(src_node_id, dst_node_0):
+            Graph.AddEdge(src_node_id, dst_node_0)
 
+        if not Graph.IsEdge(src_node_id, dst_node_1):
+            Graph.AddEdge(src_node_id, dst_node_1)
     ############################################################################
     return Graph
 
@@ -134,7 +123,14 @@ def connectRandomNodes(Graph, M=4000):
     """
     ############################################################################
     # TODO: Your code here!
-
+    N = Graph.GetNodes()
+    count_random_connections = 0
+    while count_random_connections < M:
+        src_node_id = random.randint(0, N-1)
+        dst_node_id = random.randint(0, N-1)
+        if not Graph.IsEdge(src_node_id, dst_node_id):
+            Graph.AddEdge(src_node_id, dst_node_id)
+            count_random_connections += 1
     ############################################################################
     return Graph
 
@@ -164,8 +160,8 @@ def loadCollabNet(path):
     """
     ############################################################################
     # TODO: Your code here!
-    Graph = None
-
+    Graph = snap.LoadEdgeList(snap.PUNGraph, 'CA-GrQc.txt', 0, 1)
+    snap.DelSelfEdges(Graph)
     ############################################################################
     return Graph
 
@@ -181,7 +177,12 @@ def getDataPointsToPlot(Graph):
     ############################################################################
     # TODO: Your code here!
     X, Y = [], []
-
+    CntV = snap.TIntPrV()
+    snap.GetOutDegCnt(Graph, CntV)
+    for p in CntV:
+        X.append(p.GetVal1())
+        Y.append(p.GetVal2())
+        # print("degree %d: count %d" % (p.GetVal1(), p.GetVal2()))
     ############################################################################
     return X, Y
 
@@ -209,6 +210,7 @@ def Q1_1():
     plt.title('Degree Distribution of Erdos Renyi, Small World, and Collaboration Networks')
     plt.legend()
     plt.show()
+    plt.savefig('q1-1_degree_distribution.png')
 
 
 # Execute code for Q1.1
@@ -228,8 +230,27 @@ def calcClusteringCoefficientSingleNode(Node, Graph):
     """
     ############################################################################
     # TODO: Your code here!
-    C = 0.0
-
+    Deg = Node.GetDeg()
+    if Deg < 2:
+        return 0
+    
+    E = 0
+    NodeId0 = Node.GetId()
+    Neighbors = []
+    for Node1 in Graph.Nodes():
+        NodeId1 = Node1.GetId()
+        if Graph.IsEdge(NodeId0, NodeId1):
+            Neighbors.append(Node1)
+    
+    for Neighbor0 in Neighbors:
+        NodeId0 = Neighbor0.GetId()
+        for Neighbor1 in Neighbors:
+            NodeId1 = Neighbor1.GetId()
+            if (NodeId0 != NodeId1) and (Graph.IsEdge(NodeId0, NodeId1)):
+                E += 1
+    
+    C = 2*E / Deg*(Deg-1)
+    # print(C)
     ############################################################################
     return C
 
@@ -243,8 +264,13 @@ def calcClusteringCoefficient(Graph):
     ############################################################################
     # TODO: Your code here! If you filled out calcClusteringCoefficientSingleNode,
     #       you'll probably want to call it in a loop here
-    C = 0.0
 
+    V = Graph.GetNodes()
+    C = []
+    for Node in Graph.Nodes():
+        CNode = calcClusteringCoefficientSingleNode(Node, Graph)
+        C.append(CNode)
+    C = sum(C) / V
     ############################################################################
     return C
 
