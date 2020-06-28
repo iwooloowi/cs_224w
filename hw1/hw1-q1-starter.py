@@ -247,7 +247,7 @@ def calcClusteringCoefficientSingleNode(Node, Graph):
             if (NodeId0 != NodeId1) and (Graph.IsEdge(NodeId0, NodeId1)):
                 E += 1
     
-    C = 2*E / Deg*(Deg-1)
+    C = (2*E) / (Deg*(Deg-1))
     # print(C)
     ############################################################################
     return C
