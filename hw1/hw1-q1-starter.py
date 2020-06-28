@@ -240,12 +240,10 @@ def calcClusteringCoefficientSingleNode(Node, Graph):
     for Node1 in Graph.Nodes():
         NodeId1 = Node1.GetId()
         if Graph.IsEdge(NodeId0, NodeId1):
-            Neighbors.append(Node1)
+            Neighbors.append(NodeId1)
     
-    for Neighbor0 in Neighbors:
-        NodeId0 = Neighbor0.GetId()
-        for Neighbor1 in Neighbors:
-            NodeId1 = Neighbor1.GetId()
+    for NodeId0 in Neighbors:
+        for NodeId1 in Neighbors:
             if (NodeId0 != NodeId1) and (Graph.IsEdge(NodeId0, NodeId1)):
                 E += 1
     
